@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dihedral Angle Formula — Visual Derivation & Practice</title>
+<style>
+  :root{
+    --red:#e2463a; --blue:#3f51d6; --green:#2c9a4b; --purple:#8e44ad;
+    --orange:#e67e22; --teal:#16a085; --ink:#1d2433; --muted:#6b7385;
+    --bg:#f4f6fb; --card:#ffffff; --line:#e3e7f0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(120deg,#2a2f6b,#4a3f8f 55%,#7b3f8f);color:#fff;padding:28px 20px 34px;text-align:center}
+  header h1{margin:0 0 6px;font-size:1.9rem}
+  header p{margin:0;opacity:.9}
+  .formula{font-family:Georgia,"Times New Roman",serif;font-size:1.6rem;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);padding:10px 22px;border-radius:14px;margin-top:16px}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px}
+  .frac>span:first-child{border-bottom:2px solid currentColor;padding:0 6px 2px}
+  .frac>span:last-child{padding:2px 6px 0}
+  main{max-width:1250px;margin:0 auto;padding:20px}
+  section{background:var(--card);border-radius:16px;box-shadow:0 4px 18px rgba(30,40,80,.07);padding:20px;margin-bottom:22px}
+  h2{margin:0 0 12px;font-size:1.35rem}
+  .legend span{display:inline-block;margin-right:16px;font-weight:600}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  .grid{display:grid;grid-template-columns:1.45fr 1fr;gap:18px}
+  @media(max-width:950px){.grid{grid-template-columns:1fr}}
+  .canvasWrap{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(circle at 40% 35%,#ffffff,#eef1f8)}
+  #c3d{width:100%;height:520px;display:block;touch-action:none;cursor:grab}
+  #c3d:active{cursor:grabbing}
+  #c2d{width:100%;height:340px;display:block}
+  .hint3d{position:absolute;left:10px;bottom:8px;font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.8);padding:2px 8px;border-radius:6px}
+  .cap{position:absolute;left:10px;top:8px;font-size:.85rem;font-weight:600;color:#33407a;background:rgba(255,255,255,.85);padding:2px 8px;border-radius:6px}
+  .stepBox{border:2px solid #d9def0;border-radius:12px;padding:14px;background:#fbfcff;min-height:190px}
+  .stepBox h3{margin:0 0 8px;color:#3a3f9a}
+  .stepDots{display:flex;gap:6px;margin:10px 0}
+  .stepDots button{width:30px;height:30px;border-radius:50%;border:2px solid #c6cbe6;background:#fff;cursor:pointer;font-weight:700;color:#666}
+  .stepDots button.on{background:#4a3f8f;color:#fff;border-color:#4a3f8f}
+  .stepDots button.done{background:#dcd8f3;color:#4a3f8f}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  button.b{border:none;border-radius:9px;padding:9px 14px;font-weight:600;cursor:pointer;background:#e7e9f6;color:#2a2f6b;font-size:.95rem}
+  button.b:hover{filter:brightness(.95)}
+  button.b.primary{background:#4a3f8f;color:#fff}
+  button.b.good{background:var(--green);color:#fff}
+  button.b:disabled{opacity:.45;cursor:not-allowed}
+  .ctrl{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+  .sl{display:grid;grid-template-columns:70px 1fr 64px;align-items:center;gap:8px;margin:6px 0}
+  .sl label{font-family:Georgia,serif;font-size:1.1rem;font-weight:bold}
+  .sl input[type=range]{width:100%}
+  .sl .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .mode{font-size:.9rem;margin:6px 0}
+  .warn{display:none;background:#fff1f0;color:#b3261e;border:1px solid #f3c0bb;padding:8px 10px;border-radius:8px;font-size:.9rem;margin-top:6px}
+  .live{font-family:Consolas,Menlo,monospace;font-size:.88rem;background:#f6f7fc;border-radius:10px;padding:10px;margin-top:10px;line-height:1.65}
+  .live b{color:#4a3f8f}
+  .board{margin-top:16px}
+  .board .ln{font-family:Georgia,serif;font-size:1.08rem;padding:8px 12px;border-left:4px solid transparent;border-radius:6px;opacity:0;transform:translateX(-12px);transition:all .6s;max-height:0;overflow:hidden}
+  .board .ln.show{opacity:1;transform:none;max-height:140px;margin:4px 0}
+  .board .ln.cur{border-left-color:#e67e22;background:#fff7ec}
+  .final{font-size:1.25rem!important;background:#eef9f1!important;border-left-color:var(--green)!important}
+  .pulse{animation:pulse 1.2s ease-in-out 3}
+  @keyframes pulse{50%{transform:scale(1.04);box-shadow:0 0 0 6px rgba(44,154,75,.2)}}
+  /* practice */
+  .ptop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  select{padding:8px;border-radius:8px;border:1px solid #c9cde0;font-size:.95rem}
+  .score{font-weight:700}
+  .score span{display:inline-block;background:#eef0fa;padding:5px 10px;border-radius:8px;margin-left:6px}
+  .qcard{border:2px solid #e0e3f2;border-radius:14px;padding:18px;background:#fcfcff}
+  .qmeta{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:#7b3f8f;font-weight:700}
+  .qtext{font-size:1.12rem;margin:8px 0 14px}
+  .qtext .ang{font-family:Georgia,serif;font-weight:bold}
+  .ansRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ansRow input{font-size:1.1rem;padding:8px 10px;border-radius:8px;border:2px solid #c9cde0;width:170px}
+  .opts{display:grid;gap:8px}
+  .opt{text-align:left;border:2px solid #d8dcef;background:#fff;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:1rem;font-family:Georgia,serif}
+  .opt:hover{border-color:#8f86cf}
+  .opt.right{border-color:var(--green);background:#eaf8ee}
+  .opt.wrong{border-color:var(--red);background:#fdeeee}
+  .fb{margin-top:14px}
+  .fb .ok{color:var(--green);font-weight:700}
+  .fb .no{color:var(--red);font-weight:700}
+  .hintBox{background:#fff8e6;border:1px solid #f1dca4;border-radius:8px;padding:8px 12px;margin-top:10px}
+  .sol{background:#f3f5fc;border-radius:10px;padding:10px 14px;margin-top:10px;font-family:Georgia,serif;font-size:1.05rem}
+  .sol p{margin:6px 0}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Dihedral Angle of a Trihedral Angle</h1>
+  <p>Find the angle θ between two faces using only the three face angles α, β, γ</p>
+  <div class="formula">cos θ =
+    <span class="frac"><span>cos γ − cos α · cos β</span><span>sin α · sin β</span></span>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <h2>🔺 Setting</h2>
+  <p>Three rays <b>OA, OB, OC</b> leave a vertex O and form three faces.
+  θ is the <b>dihedral angle between the red and blue faces</b>, measured along their common edge <b>OA</b>.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--red)"></i>Red face AOB: ∠AOB = α</span>
+    <span><i class="sw" style="background:var(--blue)"></i>Blue face AOC: ∠AOC = β</span>
+    <span><i class="sw" style="background:var(--green)"></i>Green face BOC: ∠BOC = γ (the "opposite" face)</span>
+  </div>
+</section>
+
+<section>
+  <h2>🎬 Animated Derivation</h2>
+  <div class="grid">
+    <div>
+      <div class="canvasWrap">
+        <canvas id="c3d"></canvas>
+        <div class="cap">3D view</div>
+        <div class="hint3d">Drag to rotate · scroll to zoom</div>
+      </div>
+      <div class="canvasWrap" style="margin-top:12px">
+        <canvas id="c2d"></canvas>
+        <div class="cap">Top view of the blue plane (face AOC)</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="stepBox">
+        <h3 id="stTitle"></h3>
+        <div id="stText"></div>
+      </div>
+      <div class="stepDots" id="dots"></div>
+      <div class="btns">
+        <button class="b" id="prev">◀ Back</button>
+        <button class="b primary" id="next">Next ▶</button>
+        <button class="b" id="play">▶ Play all</button>
+        <button class="b" id="replay">↻ Replay step</button>
+      </div>
+      <div class="btns">
+        <label style="font-size:.9rem"><input type="checkbox" id="autorot"> Auto-rotate</label>
+        <button class="b" id="resetView" style="padding:5px 10px;font-size:.85rem">Reset view</button>
+      </div>
+
+      <div class="ctrl">
+        <b>Change the shape</b>
+        <div class="mode">
+          <label><input type="radio" name="mode" value="theta" checked> I control θ (γ is calculated)</label><br>
+          <label><input type="radio" name="mode" value="gamma"> I control γ (θ is calculated by the formula)</label>
+        </div>
+        <div class="sl"><label style="color:var(--red)">α</label><input type="range" id="sA" min="15" max="165" value="60"><span class="v" id="vA"></span></div>
+        <div class="sl"><label style="color:var(--blue)">β</label><input type="range" id="sB" min="15" max="165" value="65"><span class="v" id="vB"></span></div>
+        <div class="sl"><label>θ</label><input type="range" id="sT" min="10" max="170" value="70"><span class="v" id="vT"></span></div>
+        <div class="sl"><label style="color:var(--green)">γ</label><input type="range" id="sG" min="5" max="175" value="60" disabled><span class="v" id="vG"></span></div>
+        <div class="warn" id="warn"></div>
+        <div class="live" id="live"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+</section>
+
+<section id="practice">
+  <h2>✏️ Practice</h2>
+  <div class="ptop">
+    <div>
+      Question type:
+      <select id="qtype">
+        <option value="mixed">Mixed (recommended)</option>
+        <option value="theta">Find θ from α, β, γ</option>
+        <option value="cos">Find cos θ (exact / decimal)</option>
+        <option value="gamma">Find γ from α, β, θ (reverse)</option>
+        <option value="applied">Real solids (tetrahedron, pyramid…)</option>
+        <option value="concept">Understanding the derivation</option>
+      </select>
+    </div>
+    <div class="score">Score <span id="score">0 / 0</span> Streak <span id="streak">0 🔥</span></div>
+  </div>
+
+  <div class="qcard">
+    <div class="qmeta" id="qmeta"></div>
+    <div class="qtext" id="qtext"></div>
+    <div id="qinput"></div>
+    <div class="btns">
+      <button class="b primary" id="qcheck">Check</button>
+      <button class="b" id="qhint">💡 Hint</button>
+      <button class="b" id="qsol">Show solution</button>
+      <button class="b" id="qviz">🎥 See it in 3D</button>
+      <button class="b good" id="qnext">Next question ▶</button>
+    </div>
+    <div class="fb" id="qfb"></div>
+  </div>
+</section>
+
+</main>
+<footer>Tip: In the derivation, think of the formula as the spherical law of cosines: cos γ = cos α cos β + sin α sin β cos θ.</footer>
+
+<script>
+/* ============ math helpers ============ */
+const D2R=Math.PI/180, R2D=180/Math.PI;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const len=a=>Math.hypot(a[0],a[1],a[2]);
+const norm=a=>{const l=len(a)||1;return mul(a,1/l)};
+const lerp=(a,b,t)=>add(a,mul(sub(b,a),t));
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const cs=d=>Math.cos(d*D2R), sn=d=>Math.sin(d*D2R);
+const f3=x=>(Math.abs(x)<5e-5?0:x).toFixed(3), f4=x=>(Math.abs(x)<5e-6?0:x).toFixed(4);
+const frac=(n,d)=>`<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+
+const COL={red:'#e2463a',redD:'#a8261c',blue:'#3f51d6',blueD:'#26339a',green:'#2c9a4b',
+  purple:'#8e44ad',orange:'#e67e22',teal:'#16a085',ink:'#1d2433',gray:'#777'};
+
+/* ============ state ============ */
+const S={alpha:60,beta:65,theta:70,mode:'theta'};
+let G={};
+const L=1.55;
+function geom(){
+  const a=S.alpha*D2R,b=S.beta*D2R,th=S.theta*D2R;
+  const ea=[1,0,0], ec=[Math.cos(b),Math.sin(b),0],
+        eb=[Math.cos(a),Math.sin(a)*Math.cos(th),Math.sin(a)*Math.sin(th)];
+  const cg=clamp(dot(eb,ec),-1,1), g=Math.acos(cg);
+  const O=[0,0,0],A=mul(ea,L),B=mul(eb,L),C=mul(ec,L),P=eb;
+  const M=mul(ea,Math.cos(a)), x=Math.sin(a)*Math.cos(th);
+  const H=[Math.cos(a),x,0], Q=mul(ec,cg), N=mul(ec,Math.cos(a)*Math.cos(b));
+  const center=mul(add(add(O,A),add(B,C)),0.25);
+  G={a,b,th,g,cg,x,ea,eb,ec,O,A,B,C,P,M,H,Q,N,center};
+}
+
+/* ============ canvases ============ */
+const cv=document.getElementById('c3d'), ctx=cv.getContext('2d');
+const cv2=document.getElementById('c2d'), ctx2=cv2.getContext('2d');
+let W=600,Hh=520,W2=600,H2=340;
+function fit(){
+  const dpr=window.devicePixelRatio||1;
+  let r=cv.getBoundingClientRect(); W=r.width;Hh=r.height;
+  cv.width=W*dpr;cv.height=Hh*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  r=cv2.getBoundingClientRect(); W2=r.width;H2=r.height;
+  cv2.width=W2*dpr;cv2.height=H2*dpr;ctx2.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',fit);
+
+const cam={yaw:-0.6,pitch:0.42,zoom:1};
+function proj(p){
+  const q=sub(p,G.center);
+  const cy=Math.cos(cam.yaw),sy=Math.sin(cam.yaw),cp=Math.cos(cam.pitch),sp=Math.sin(cam.pitch);
+  const x1=q[0]*cy-q[1]*sy, y1=q[0]*sy+q[1]*cy, z1=q[2];
+  const y2=y1*cp-z1*sp, z2=y1*sp+z1*cp;
+  const f=5/(5+y2), sc=Math.min(W,Hh)/2.3*cam.zoom;
+  return [W/2+sc*x1*f, Hh/2-sc*z2*f, y2];
+}
+
+/* ---- drawing primitives (3D) ---- */
+function tag(c,x,y,txt,col,size=15){
+  c.save();c.font=`italic 600 ${size}px Georgia, serif`;
+  const w=c.measureText(txt).width;
+  c.fillStyle='rgba(255,255,255,.88)';c.fillRect(x-w/2-4,y-size*0.68,w+8,size*1.36);
+  c.fillStyle=col;c.textAlign='center';c.textBaseline='middle';c.fillText(txt,x,y);c.restore();
+}
+function line3(p,q,col,w=2,dash=null,t=1){
+  if(t<=0)return;const a=proj(p),b=proj(lerp(p,q,t));
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineCap='round';if(dash)ctx.setLineDash(dash);
+  ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();ctx.restore();
+}
+function dot3(p,col,r=4.5){const a=proj(p);ctx.fillStyle=col;ctx.beginPath();ctx.arc(a[0],a[1],r,0,7);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+function label3(p,txt,col,dx=0,dy=-14,size=16){const a=proj(p);tag(ctx,a[0]+dx,a[1]+dy,txt,col,size);}
+function labelSeg(p,q,txt,col,ref,off=17){
+  const a=proj(p),b=proj(q);const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy);if(l<10)return;
+  let nx=-dy/l,ny=dx/l;const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+  if(ref){const r=proj(ref);if(nx*(r[0]-mx)+ny*(r[1]-my)>0){nx=-nx;ny=-ny;}}
+  tag(ctx,mx+nx*off,my+ny*off,txt,col);
+}
+function arc3(c,u,v,r,col,t=1,lab,w=2.5){
+  if(t<=0||len(u)<1e-6||len(v)<1e-6)return;
+  u=norm(u);v=norm(v);const d=clamp(dot(u,v),-1,1),phi=Math.acos(d);
+  let wv=sub(v,mul(u,d));if(len(wv)<1e-6)return;wv=norm(wv);
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();
+  const n=30;for(let i=0;i<=n;i++){const s=phi*t*i/n;
+    const p=proj(add(c,add(mul(u,r*Math.cos(s)),mul(wv,r*Math.sin(s)))));
+    i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);}
+  ctx.stroke();ctx.restore();
+  if(lab&&t>0.85){const s=phi/2;const p=proj(add(c,add(mul(u,r*1.5*Math.cos(s)),mul(wv,r*1.5*Math.sin(s)))));
+    tag(ctx,p[0],p[1],lab,col,17);}
+}
+function right3(c,u,v,s,col='#333'){
+  if(len(u)<1e-4||len(v)<1e-4)return;u=norm(u);v=norm(v);
+  const p1=proj(add(c,mul(u,s))),p2=proj(add(add(c,mul(u,s)),mul(v,s))),p3=proj(add(c,mul(v,s)));
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.beginPath();
+  ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.lineTo(p3[0],p3[1]);ctx.stroke();ctx.restore();
+}
+function face3(pts,fill){
+  const P=pts.map(proj);ctx.fillStyle=fill;ctx.beginPath();
+  P.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fill();
+}
+
+/* ============ steps ============ */
+const STEPS=[
+ {title:'Step 1 · The trihedral angle',persist:true,
+  text:`Three rays <b>OA, OB, OC</b> from O make three faces.<br>
+  Face angles: <span style="color:var(--red)">∠AOB = α</span>, <span style="color:var(--blue)">∠AOC = β</span>,
+  <span style="color:var(--green)">∠BOC = γ</span>.<br>
+  Goal: find <b>θ</b>, the angle between the <span style="color:var(--red)">red</span> and
+  <span style="color:var(--blue)">blue</span> faces along their shared edge <b>OA</b>.`,
+  draw(g,t){arc3(g.O,g.ea,g.eb,0.38,COL.red,t,'α');arc3(g.O,g.ea,g.ec,0.28,COL.blue,t,'β');
+    arc3(g.O,g.eb,g.ec,0.5,COL.green,t,'γ');}},
+ {title:'Step 2 · What does θ mean?',persist:false,
+  text:`Pick any point K on the common edge OA. In each face, draw a line from K <b>perpendicular to OA</b>.
+  The angle between these two lines is the <b>dihedral angle θ</b>.<br><br>
+  To use this definition, we need lines perpendicular to OA. We build them in the next steps.`,
+  draw(g,t){const K=mul(g.ea,0.95),ur=[0,Math.cos(g.th),Math.sin(g.th)],ub=[0,1,0];
+    line3(K,add(K,mul(ur,0.5)),COL.redD,3.5,null,t);line3(K,add(K,mul(ub,0.5)),COL.blueD,3.5,null,t);
+    if(t>0.6){right3(K,mul(g.ea,-1),ur,0.07);right3(K,mul(g.ea,-1),ub,0.07);dot3(K,'#000');label3(K,'K','#000',-10,16);}
+    arc3(K,ur,ub,0.2,'#000',t,'θ',3);}},
+ {title:'Step 3 · A point at distance 1',persist:true,
+  text:`Choose a point <b>P</b> on OB with <b>OP = 1</b>.<br><br>
+  With a hypotenuse of length 1, every side of a right triangle in this figure is just a <b>sine</b> or a <b>cosine</b>.`,
+  draw(g,t){line3(g.O,g.P,'#111',4.5,null,t);if(t>0.6){dot3(g.P,'#111');label3(g.P,'P','#111',-12,-12);
+    labelSeg(g.O,g.P,'1','#111',g.A);}}},
+ {title:'Step 4 · Drop PM ⟂ OA',persist:true,
+  text:`Drop a perpendicular from P to the edge OA. Call the foot <b>M</b>.<br>
+  Right triangle OMP has hypotenuse OP = 1 and angle α at O, so:<br>
+  <b style="color:var(--red)">OM = cos α</b>, &nbsp; <b style="color:var(--purple)">PM = sin α</b>.<br>
+  PM lies in the red face and is ⟂ OA. It is one arm of the dihedral angle.`,
+  draw(g,t){if(Math.cos(g.a)<0)line3(g.O,g.M,'#999',2,[5,4],t);
+    line3(g.O,g.M,COL.red,5,null,t);line3(g.P,g.M,COL.purple,3.5,null,t);
+    if(t>0.6){right3(g.M,g.ea,sub(g.P,g.M),0.07);dot3(g.M,COL.purple);label3(g.M,'M',COL.purple,8,16);
+      labelSeg(g.O,g.M,'cos α',COL.red,g.P,20);labelSeg(g.P,g.M,'sin α',COL.purple,g.A);}}},
+ {title:'Step 5 · Drop PH ⟂ blue plane',persist:true,
+  text:`Drop a perpendicular from P straight down to the blue plane. Call the foot <b>H</b>.<br>
+  PM ⟂ OA and PH ⟂ the plane, so by the <b>three perpendiculars theorem</b>, MH ⟂ OA as well.
+  MH lies in the blue face, so <b>∠PMH = θ</b>.<br>
+  In right triangle PHM: <b style="color:var(--orange)">x = MH = sin α · cos θ</b><br>
+  &nbsp;&nbsp;⇒ <b>cos θ = x / sin α</b> … (1)<br>
+  <small>(If θ &gt; 90°, H falls outside the blue face and x is negative. The formula still works.)</small>`,
+  draw(g,t){const u=[0,1,0];
+    if(g.x<0)line3(g.M,add(g.M,mul(u,0.35)),COL.blueD,2,[4,4],t);
+    line3(g.P,g.H,'#555',2,[6,4],t);line3(g.M,g.H,COL.orange,4,null,t);
+    if(t>0.6){if(Math.abs(g.x)>0.03&&Math.abs(Math.sin(g.th))>0.03)right3(g.H,sub(g.M,g.H),sub(g.P,g.H),0.07);
+      dot3(g.H,COL.orange);label3(g.H,'H',COL.orange,12,14);labelSeg(g.M,g.H,'x',COL.orange,g.P);}
+    arc3(g.M,sub(g.P,g.M),u,0.2,'#000',t,'θ',3);}},
+ {title:'Step 6 · Drop PQ ⟂ OC',persist:true,
+  text:`Drop a perpendicular from P to the edge OC. Call the foot <b>Q</b>.<br>
+  Right triangle OQP has hypotenuse 1 and angle γ at O, so <b style="color:var(--green)">OQ = cos γ</b>.<br>
+  PH ⟂ the plane and PQ ⟂ OC, so by the three perpendiculars theorem again, <b>HQ ⟂ OC</b>.
+  This means Q is also the foot of the perpendicular from H to OC.
+  So we can find OQ by working only inside the blue plane.`,
+  draw(g,t){if(g.cg<0)line3(g.O,g.Q,'#999',2,[5,4],t);
+    line3(g.P,g.Q,COL.teal,3,null,t);line3(g.H,g.Q,COL.teal,2.2,[5,4],t);
+    if(t>0.6){right3(g.Q,g.ec,sub(g.P,g.Q),0.07);right3(g.Q,g.ec,sub(g.H,g.Q),0.06,COL.teal);
+      dot3(g.Q,COL.teal);label3(g.Q,'Q',COL.teal,12,-10);labelSeg(g.O,g.Q,'cos γ',COL.green,g.H,22);}}},
+ {title:'Step 7 · Look down at the blue plane',persist:true,
+  text:`Now look at the <b>top view</b> (lower picture). Get from O to H in two moves:<br>
+  • O→M: length cos α along OA. Its projection onto OC is <b>cos α cos β</b> (= ON)<br>
+  • M→H: length x, ⟂ OA, so it makes an angle of 90° − β with OC. Its projection is <b>x sin β</b> (= NQ)<br>
+  Therefore <b>cos γ = OQ = cos α cos β + x sin β</b> … (2)`,
+  draw(g,t){line3(g.M,g.N,COL.gray,2,[4,4],t);
+    if(t>0.6&&len(sub(g.M,g.N))>0.03){right3(g.N,g.ec,sub(g.M,g.N),0.06,COL.gray);dot3(g.N,COL.gray);label3(g.N,'N',COL.gray,-12,-10);}}},
+ {title:'Step 8 · Put it together ✔',persist:true,
+  text:`From (2): <b>x = (cos γ − cos α cos β) / sin β</b><br>
+  Substitute into (1), cos θ = x / sin α:<br>
+  <div style="font-family:Georgia,serif;font-size:1.35rem;margin:10px 0;color:#1d6d34">cos θ = ${frac('cos γ − cos α cos β','sin α sin β')}</div>
+  Drag the sliders. The live check confirms the formula for every shape.`,
+  draw(g,t){}}
+];
+
+const BOARD=[
+ {s:0,h:`Face angles: ∠AOB = α, ∠AOC = β, ∠BOC = γ`},
+ {s:2,h:`OP = 1`},
+ {s:3,h:`OM = cos α, &nbsp; PM = sin α`},
+ {s:4,h:`∠PMH = θ &nbsp;⇒&nbsp; x = MH = sin α cos θ &nbsp;⇒&nbsp; cos θ = x / sin α &nbsp;&nbsp;…(1)`},
+ {s:5,h:`OQ = cos γ &nbsp;(and HQ ⟂ OC)`},
+ {s:6,h:`OQ = ON + NQ &nbsp;⇒&nbsp; cos γ = cos α cos β + x sin β &nbsp;&nbsp;…(2)`},
+ {s:7,h:`(2) ⇒ x = ${frac('cos γ − cos α cos β','sin β')} &nbsp;&nbsp;→ into (1): &nbsp; <b>cos θ = ${frac('cos γ − cos α cos β','sin α sin β')}</b>`,fin:true}
+];
+
+let cur=0,stepT=0,playing=false,hold=0,autoRot=false;
+
+/* ============ render 3D ============ */
+function render3D(){
+  ctx.clearRect(0,0,W,Hh);const g=G;
+  const faces=[
+    {p:[g.O,g.A,g.B],c:'rgba(226,70,58,0.30)'},
+    {p:[g.O,g.A,g.C],c:'rgba(63,81,214,0.28)'},
+    {p:[g.O,g.B,g.C],c:'rgba(44,154,75,0.22)'}];
+  faces.forEach(f=>f.d=f.p.reduce((s,p)=>s+proj(p)[2],0)/3);
+  faces.sort((a,b)=>b.d-a.d).forEach(f=>face3(f.p,f.c));
+  line3(g.A,g.B,'#9aa',1.2);line3(g.B,g.C,'#9aa',1.2);line3(g.A,g.C,'#9aa',1.2);
+  line3(g.O,g.A,COL.ink,2.6);line3(g.O,g.B,COL.ink,2.6);line3(g.O,g.C,COL.ink,2.6);
+  dot3(g.O,COL.ink,4);label3(g.O,'O',COL.ink,-14,-6,17);
+  label3(mul(g.ea,L+0.12),'A',COL.ink,0,0,17);label3(mul(g.eb,L+0.12),'B',COL.ink,0,0,17);label3(mul(g.ec,L+0.12),'C',COL.ink,0,0,17);
+  for(let i=0;i<=cur;i++){const st=STEPS[i];if(!st.persist&&i!==cur)continue;st.draw(g,i<cur?1:ease(stepT));}
+}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+
+/* ============ render 2D (blue plane) ============ */
+function render2D(){
+  const c=ctx2,g=G;c.clearRect(0,0,W2,H2);
+  const pts=[[0,0],[g.A[0],g.A[1]],[g.C[0],g.C[1]],[g.M[0],0],[g.H[0],g.H[1]],[g.Q[0],g.Q[1]],[g.N[0],g.N[1]]];
+  let mnx=Math.min(...pts.map(p=>p[0])),mxx=Math.max(...pts.map(p=>p[0])),mny=Math.min(...pts.map(p=>p[1])),mxy=Math.max(...pts.map(p=>p[1]));
+  const pad=58,s=Math.min((W2-2*pad)/((mxx-mnx)||1),(H2-2*pad)/((mxy-mny)||1));
+  const ox=(W2-(mxx-mnx)*s)/2,oy=(H2+(mxy-mny)*s)/2;
+  const T=p=>[ox+(p[0]-mnx)*s,oy-(p[1]-mny)*s];
+  const ln=(p,q,col,w=2,dash=null,t=1)=>{if(t<=0)return;const a=T(p),b=T([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);
+    c.save();c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();c.restore();};
+  const pt=(p,col,lab,dx=0,dy=-14)=>{const a=T(p);c.fillStyle=col;c.beginPath();c.arc(a[0],a[1],4.5,0,7);c.fill();if(lab)tag(c,a[0]+dx,a[1]+dy,lab,col,16);};
+  const ra=(corner,u,v,sz=10,col='#333')=>{const a=T(corner);const lu=Math.hypot(u[0],u[1]),lv=Math.hypot(v[0],v[1]);if(lu<1e-4||lv<1e-4)return;
+    const U=[u[0]/lu,-u[1]/lu],Vv=[v[0]/lv,-v[1]/lv];c.save();c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();
+    c.moveTo(a[0]+U[0]*sz,a[1]+U[1]*sz);c.lineTo(a[0]+U[0]*sz+Vv[0]*sz,a[1]+U[1]*sz+Vv[1]*sz);c.lineTo(a[0]+Vv[0]*sz,a[1]+Vv[1]*sz);c.stroke();c.restore();};
+  const O=[0,0],A=[g.A[0],g.A[1]],C=[g.C[0],g.C[1]],M=[g.M[0],0],Hp=[g.H[0],g.H[1]],Q=[g.Q[0],g.Q[1]],N=[g.N[0],g.N[1]];
+  const ecs=[g.ec[0],g.ec[1]];
+  const tf=i=>cur>i?1:(cur===i?ease(stepT):0);
+  // blue face
+  const a0=T(O),a1=T(A),a2=T(C);c.fillStyle='rgba(63,81,214,0.18)';c.beginPath();c.moveTo(a0[0],a0[1]);c.lineTo(a1[0],a1[1]);c.lineTo(a2[0],a2[1]);c.closePath();c.fill();
+  ln(O,A,COL.ink,2.4);ln(O,C,COL.ink,2.4);
+  if(g.M[0]<0)ln(O,[g.M[0]*1.25,0],'#aaa',1.5,[5,4]);
+  if(g.cg<0)ln(O,[Q[0]*1.25,Q[1]*1.25],'#aaa',1.5,[5,4]);
+  c.save();c.strokeStyle=COL.blue;c.lineWidth=2.5;c.beginPath();c.arc(a0[0],a0[1],28,-g.b,0);c.stroke();c.restore();
+  tag(c,a0[0]+42*Math.cos(g.b/2),a0[1]-42*Math.sin(g.b/2),'β',COL.blue,16);
+  pt(O,COL.ink,'O',-14,6);tag(c,a1[0]+14,a1[1],'A',COL.ink,16);tag(c,a2[0]+8,a2[1]-12,'C',COL.ink,16);
+  if(cur<3){tag(c,W2/2,H2-22,'Points appear here from Step 4 onward…','#888',14);return;}
+  // side for brackets: opposite to H
+  const sO=T(O),sC=T(C);let dx=sC[0]-sO[0],dy=sC[1]-sO[1];const l=Math.hypot(dx,dy);let nx=-dy/l,ny=dx/l;
+  const sH=T(Hp);if(nx*(sH[0]-sO[0])+ny*(sH[1]-sO[1])>0){nx=-nx;ny=-ny;}
+  const bracket=(p,q,off,txt,col,t)=>{if(t<=0)return;const a=T(p),b=T(q);const bx=a[0]+(b[0]-a[0])*t,by=a[1]+(b[1]-a[1])*t;
+    c.save();c.strokeStyle=col;c.lineWidth=2.4;c.beginPath();
+    c.moveTo(a[0]+nx*(off-5),a[1]+ny*(off-5));c.lineTo(a[0]+nx*off,a[1]+ny*off);c.lineTo(bx+nx*off,by+ny*off);c.lineTo(bx+nx*(off-5),by+ny*(off-5));c.stroke();c.restore();
+    if(t>0.85&&Math.hypot(b[0]-a[0],b[1]-a[1])>12)tag(c,(a[0]+b[0])/2+nx*(off+13),(a[1]+b[1])/2+ny*(off+13),txt,col,14);};
+  // step 4: M
+  const t3=tf(3);ln(O,M,COL.red,5,null,t3);if(t3>0.6){pt(M,COL.purple,'M',0,16);}
+  if(t3>0.85){const am=T(M);tag(c,(a0[0]+am[0])/2,(a0[1]+am[1])/2+18,'cos α',COL.red,14);}
+  // step 5: H
+  const t4=tf(4);if(t4>0){ln(M,Hp,COL.orange,4,null,t4);if(t4>0.6){pt(Hp,COL.orange,'H',14,0);ra(M,[1,0],[0,g.x>=0?1:-1]);
+    const am=T(M),ah=T(Hp);tag(c,(am[0]+ah[0])/2+14,(am[1]+ah[1])/2,'x',COL.orange,16);}}
+  // step 6: Q
+  const t5=tf(5);if(t5>0){ln(Hp,Q,COL.teal,2.2,[5,4],t5);if(t5>0.6){pt(Q,COL.teal,'Q',0,0);ra(Q,ecs,[Hp[0]-Q[0],Hp[1]-Q[1]],9,COL.teal);}
+    bracket(O,Q,48,'OQ = cos γ',COL.green,t5);}
+  // step 7: N decomposition
+  const t6=tf(6);if(t6>0){ln(M,N,COL.gray,2,[4,4],t6);if(t6>0.6){pt(N,COL.gray,'N',0,0);ra(N,ecs,[M[0]-N[0],M[1]-N[1]],9,COL.gray);}
+    bracket(O,N,18,'cos α cos β',COL.red,Math.min(1,t6*2));bracket(N,Q,18,'x sin β',COL.orange,Math.max(0,t6*2-1));}
+}
+
+/* ============ UI: steps ============ */
+const dots=document.getElementById('dots');
+STEPS.forEach((s,i)=>{const b=document.createElement('button');b.textContent=i+1;b.onclick=()=>{playing=false;updPlay();goStep(i)};dots.appendChild(b);});
+const board=document.getElementById('board');
+BOARD.forEach(r=>{const d=document.createElement('div');d.className='ln'+(r.fin?' final':'');d.innerHTML=r.h;d.dataset.s=r.s;board.appendChild(d);});
+function goStep(i){cur=clamp(i,0,STEPS.length-1);stepT=0;hold=0;updStepUI();}
+function updStepUI(){
+  document.getElementById('stTitle').textContent=STEPS[cur].title;
+  document.getElementById('stText').innerHTML=STEPS[cur].text;
+  [...dots.children].forEach((b,i)=>b.className=i===cur?'on':(i<cur?'done':''));
+  document.getElementById('prev').disabled=cur===0;document.getElementById('next').disabled=cur===STEPS.length-1;
+  [...board.children].forEach(d=>{const s=+d.dataset.s;d.classList.toggle('show',cur>=s);d.classList.toggle('cur',cur===s);
+    if(d.classList.contains('final')){d.classList.remove('pulse');if(cur===s){void d.offsetWidth;d.classList.add('pulse');}}});
+}
+function updPlay(){document.getElementById('play').textContent=playing?'⏸ Pause':'▶ Play all';}
+document.getElementById('prev').onclick=()=>{playing=false;updPlay();goStep(cur-1)};
+document.getElementById('next').onclick=()=>{playing=false;updPlay();goStep(cur+1)};
+document.getElementById('replay').onclick=()=>{stepT=0;hold=0};
+document.getElementById('play').onclick=()=>{playing=!playing;if(playing&&cur===STEPS.length-1)goStep(0);updPlay();};
+document.getElementById('autorot').onchange=e=>autoRot=e.target.checked;
+document.getElementById('resetView').onclick=()=>{cam.yaw=-0.6;cam.pitch=0.42;cam.zoom=1;};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight')goStep(cur+1);if(e.key==='ArrowLeft')goStep(cur-1);});
+
+/* drag rotate */
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',e=>{if(!drag)return;cam.yaw+=(e.clientX-drag[0])*0.01;cam.pitch=clamp(cam.pitch+(e.clientY-drag[1])*0.01,-1.45,1.45);drag=[e.clientX,e.clientY];});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=clamp(cam.zoom*(e.deltaY<0?1.08:0.93),0.5,2.5);},{passive:false});
+
+/* ============ sliders ============ */
+const sA=document.getElementById('sA'),sB=document.getElementById('sB'),sT=document.getElementById('sT'),sG=document.getElementById('sG');
+const warn=document.getElementById('warn');
+function fromSliders(){
+  S.alpha=+sA.value;S.beta=+sB.value;
+  if(S.mode==='theta'){S.theta=+sT.value;warn.style.display='none';}
+  else{const gm=+sG.value;const ct=(cs(gm)-cs(S.alpha)*cs(S.beta))/(sn(S.alpha)*sn(S.beta));
+    if(Math.abs(ct)<1){S.theta=Math.acos(ct)*R2D;warn.style.display='none';}
+    else{warn.style.display='block';warn.innerHTML=`⚠ Impossible! The formula gives cos θ = ${f3(ct)}, which is outside [−1, 1].<br>
+      Three face angles only form a corner if each is smaller than the sum of the other two (|α − β| &lt; γ &lt; α + β) and α + β + γ &lt; 360°.`;}}
+  geom();syncUI();
+}
+function syncUI(){
+  if(S.mode==='theta')sG.value=Math.round(G.g*R2D);else sT.value=Math.round(S.theta);
+  document.getElementById('vA').textContent=S.alpha.toFixed(0)+'°';document.getElementById('vB').textContent=S.beta.toFixed(0)+'°';
+  document.getElementById('vT').textContent=S.theta.toFixed(1)+'°';document.getElementById('vG').textContent=(G.g*R2D).toFixed(1)+'°';
+  const g=G,rhs=(g.cg-Math.cos(g.a)*Math.cos(g.b))/(Math.sin(g.a)*Math.sin(g.b));
+  document.getElementById('live').innerHTML=
+   `OM = cos α = <b>${f3(Math.cos(g.a))}</b> &nbsp; PM = sin α = <b>${f3(Math.sin(g.a))}</b><br>
+    x = MH = sin α cos θ = <b>${f3(g.x)}</b> &nbsp; OQ = cos γ = <b>${f3(g.cg)}</b><br>
+    ON + NQ = ${f3(Math.cos(g.a)*Math.cos(g.b))} + ${f3(g.x*Math.sin(g.b))} = <b>${f3(Math.cos(g.a)*Math.cos(g.b)+g.x*Math.sin(g.b))}</b><br>
+    Formula: (cosγ − cosα·cosβ)/(sinα·sinβ) = <b>${f4(rhs)}</b><br>
+    Actual:  cos θ = <b>${f4(Math.cos(g.th))}</b> ${Math.abs(rhs-Math.cos(g.th))<1e-6?'✅':''}`;
+}
+[sA,sB,sT,sG].forEach(s=>s.addEventListener('input',fromSliders));
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change',e=>{
+  S.mode=e.target.value;sT.disabled=S.mode!=='theta';sG.disabled=S.mode==='theta';fromSliders();}));
+function loadShape(a,b,th){S.mode='theta';document.querySelector('input[value=theta]').checked=true;sT.disabled=false;sG.disabled=true;
+  sA.value=a;sB.value=b;sT.value=th;S.alpha=a;S.beta=b;S.theta=th;warn.style.display='none';geom();syncUI();}
+
+/* ============ loop ============ */
+let last=performance.now();
+function loop(ts){
+  const dt=Math.min(0.05,(ts-last)/1000);last=ts;
+  if(stepT<1)stepT=Math.min(1,stepT+dt/1.6);
+  else if(playing){hold+=dt;if(hold>2.8){if(cur<STEPS.length-1)goStep(cur+1);else{playing=false;updPlay();}}}
+  if(autoRot&&!drag)cam.yaw+=dt*0.25;
+  render3D();render2D();requestAnimationFrame(loop);
+}
+
+/* ============ PRACTICE ============ */
+const PR={score:0,total:0,streak:0,q:null,done:false};
+const r5=(lo,hi)=>5*Math.floor(lo/5+Math.random()*((hi-lo)/5+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function validTriple(){
+  for(let k=0;k<800;k++){const a=r5(30,130),b=r5(30,130),c=r5(30,145);
+    if(c>Math.abs(a-b)+8&&c<a+b-8&&a+b+c<350){const ct=(cs(c)-cs(a)*cs(b))/(sn(a)*sn(b));if(Math.abs(ct)<0.96)return[a,b,c];}}
+  return[60,60,60];
+}
+function solTheta(a,b,c,showAngle=true){
+  const ca=cs(a),cb=cs(b),cc=cs(c),sa=sn(a),sb=sn(b),num=cc-ca*cb,den=sa*sb,ct=num/den,th=Math.acos(clamp(ct,-1,1))*R2D;
+  return{ct,th,html:`<div class="sol">
+   <p>cos θ = ${frac('cos γ − cos α cos β','sin α sin β')}
+    = ${frac(`cos ${c}° − cos ${a}° · cos ${b}°`,`sin ${a}° · sin ${b}°`)}</p>
+   <p>= ${frac(`${f4(cc)} − (${f4(ca)})(${f4(cb)})`,`(${f4(sa)})(${f4(sb)})`)}
+    = ${frac(f4(num),f4(den))} ≈ <b>${f4(ct)}</b></p>
+   ${showAngle?`<p>θ = cos⁻¹(${f4(ct)}) ≈ <b>${th.toFixed(2)}°</b></p>`:''}</div>`};
+}
+const ang=(s,v)=>`<span class="ang">${s} = ${v}°</span>`;
+
+const APPLIED=[
+ {name:'Regular tetrahedron',q:'Find the dihedral angle between two faces of a <b>regular tetrahedron</b>.',a:60,b:60,c:60,
+  hint:'Three equilateral triangles meet at each vertex. What are all three face angles?',
+  exp:'At a vertex, three equilateral triangles meet, so α = β = γ = 60°. (Exact: cos θ = 1/3.)'},
+ {name:'Cube',q:'Use the formula to find the angle between two adjacent faces of a <b>cube</b>. (Check that it gives the answer you expect.)',a:90,b:90,c:90,
+  hint:'Three squares meet at a corner.',exp:'At a corner α = β = γ = 90°, so cos θ = (0 − 0)/1 = 0 and θ = 90°. ✔'},
+ {name:'Square pyramid (all edges equal)',q:'A square-based pyramid V-ABCD has <b>all 8 edges equal</b>. Find the dihedral angle between two <b>adjacent triangular faces</b> VAB and VAD.',a:60,b:60,c:90,
+  hint:'The faces share edge VA, so α = ∠AVB and β = ∠AVD. For γ = ∠BVD, note that BD is a diagonal of the square: BD = s√2.',
+  exp:'α = β = 60° (equilateral faces). In triangle BVD, VB = VD = s and BD = s√2, so γ = 90°. (Exact: cos θ = −1/3.)'},
+ {name:'Regular octahedron',q:'Find the dihedral angle of a <b>regular octahedron</b>.',a:60,b:60,c:90,
+  hint:'Four equilateral triangles meet at each vertex V, with its neighbours A, B, C, D forming a square. Faces VAB and VBC share VB. What is ∠AVC?',
+  exp:'α = β = 60°. A and C are opposite corners of the square, so AC = s√2 and γ = ∠AVC = 90°. θ ≈ 109.47°.'},
+ {name:'Equilateral triangular prism',q:'A right prism has an <b>equilateral triangle</b> base. Find the angle between two of its <b>rectangular side faces</b>.',a:90,b:90,c:60,
+  hint:'Look at a bottom vertex. The two rectangles share the vertical edge. Which face angle is the "opposite" one?',
+  exp:'The two rectangles give α = β = 90°, and the base triangle gives γ = 60°, so cos θ = cos 60° and θ = 60°.'},
+ {name:'Regular hexagonal prism',q:'Find the angle between two adjacent <b>side faces</b> of a right regular <b>hexagonal prism</b>.',a:90,b:90,c:120,
+  hint:'α = β = 90° (rectangles). What is the interior angle of a regular hexagon?',
+  exp:'α = β = 90°, γ = 120° (hexagon interior angle), so θ = 120°.'},
+ {name:'Regular icosahedron',q:'At a vertex of a <b>regular icosahedron</b>, two adjacent faces VAB and VBC share edge VB. Given that ∠AVC = 108°, find the dihedral angle of the icosahedron.',a:60,b:60,c:108,
+  hint:'α = β = 60° (equilateral faces), γ = 108°.',exp:'α = β = 60°, γ = 108°.'}
+];
+
+const CONCEPTS=[
+ {q:'In the derivation, P is on OB with OP = 1, and PM ⟂ OA. What is OM?',o:['cos α','sin α','cos β','cos γ'],e:'Right triangle OMP: hypotenuse 1, angle α at O, so the adjacent side is OM = cos α.'},
+ {q:'With the same setup, what is PM?',o:['sin α','cos α','sin β','tan α'],e:'PM is the side opposite α in a right triangle with hypotenuse 1.'},
+ {q:'H is the foot of the perpendicular from P to the blue plane. Which angle equals the dihedral angle θ?',o:['∠PMH','∠POH','∠PQH','∠MOH'],e:'PM ⟂ OA, and MH ⟂ OA (three perpendiculars theorem). Both lines are ⟂ to the common edge at M, so ∠PMH = θ.'},
+ {q:'What is x = MH?',o:['sin α cos θ','cos α cos θ','sin α sin θ','sin β cos θ'],e:'In right triangle PHM, the hypotenuse is PM = sin α and the angle at M is θ, so MH = sin α cos θ.'},
+ {q:'Why is Q (the foot from P to OC) also the foot from H to OC?',o:['Three perpendiculars theorem: PH ⟂ plane and PQ ⟂ OC ⇒ HQ ⟂ OC','Because OP = 1','Because triangle OHQ is isosceles','Because α = β'],e:'PH is perpendicular to the plane containing OC, so HQ is the projection of PQ onto that plane, and it is also ⟂ OC.'},
+ {q:'In the blue plane, OQ = ?',o:['cos α cos β + x sin β','cos α sin β + x cos β','cos α + x','cos β + x sin α'],e:'Project O→M (cos α along OA) and M→H (x, ⟂ OA) onto OC: cos α·cos β + x·cos(90° − β).'},
+ {q:'Which equation is equivalent to the dihedral angle formula?',o:['cos γ = cos α cos β + sin α sin β cos θ','cos γ = cos α cos β − sin α sin β cos θ','cos θ = cos α cos β + sin α sin β cos γ','sin γ = sin α sin β cos θ'],e:'Multiply both sides by sin α sin β and rearrange. This is the spherical law of cosines.'},
+ {q:'If α = β = 90°, what is θ?',o:['θ = γ','θ = 90°','θ = 180° − γ','θ = γ / 2'],e:'cos θ = (cos γ − 0)/(1·1) = cos γ, so θ = γ. (Think of the vertical edge of a prism.)'},
+ {q:'If cos γ = cos α cos β, then the two faces are…',o:['perpendicular (θ = 90°)','parallel','at 45°','impossible'],e:'The numerator becomes 0, so cos θ = 0 and θ = 90°.'},
+ {q:'Which set of face angles CANNOT form a trihedral angle?',o:['α = 40°, β = 50°, γ = 100°','α = 60°, β = 60°, γ = 60°','α = 90°, β = 90°, γ = 90°','α = 70°, β = 80°, γ = 100°'],e:'γ must be less than α + β. Here 100° > 90°, and the formula gives |cos θ| > 1.'},
+ {q:'In the formula, θ is the dihedral angle along the edge that is shared by…',o:['the faces with angles α and β','the faces with angles α and γ','the faces with angles β and γ','all three faces'],e:'γ is the face angle "opposite" θ. It is the face that does NOT touch the edge where θ is measured.'},
+ {q:'If θ > 90°, what happens to x = MH?',o:['x is negative: H lies on the other side of OA','x is larger than sin α','x = 0','The derivation fails'],e:'x = sin α cos θ < 0. H falls outside the blue face, but signed lengths keep every equation true.'}
+];
+
+function genQ(type){
+  if(type==='mixed')type=pick(['theta','theta','theta','cos','gamma','applied','applied','concept','concept']);
+  if(type==='theta'){const[a,b,c]=validTriple();const s=solTheta(a,b,c);
+    return{type,meta:'Find θ',kind:'num',unit:'°',ans:s.th,tol:0.5,viz:[a,b,s.th],
+     text:`A trihedral angle has face angles ${ang('α',a)}, ${ang('β',b)} and ${ang('γ',c)}.
+      Find the dihedral angle <b>θ</b> between the α-face and the β-face (along their common edge). Give your answer in degrees, to 1 d.p.`,
+     hint:'θ sits on the edge shared by the α and β faces, so γ is the opposite face. Calculate cos θ = (cos γ − cos α cos β)/(sin α sin β), then take cos⁻¹.',sol:s.html};}
+  if(type==='cos'){
+    const nice=pick([[60,60,60],[60,60,90],[90,90,60],[90,60,60],[60,60,120],[90,90,45],[45,45,60],[60,90,90],[30,60,90],[45,45,90]]);
+    let[a,b,c]=nice;if(Math.random()<.5)[a,b]=[b,a];const s=solTheta(a,b,c,false);
+    return{type,meta:'Find cos θ',kind:'num',unit:'',ans:s.ct,tol:0.006,viz:[a,b,Math.acos(s.ct)*R2D],
+     text:`Face angles: ${ang('α',a)}, ${ang('β',b)}, ${ang('γ',c)}.<br>Find <b>cos θ</b> (θ between the α- and β-faces). You may enter a decimal (3 d.p.) or a fraction such as -1/3.`,
+     hint:'Use exact values: cos 60° = 1/2, sin 60° = √3/2, cos 90° = 0, cos 45° = sin 45° = √2/2, cos 120° = −1/2.',
+     sol:s.html+`<div class="sol" style="margin-top:6px">cos θ ≈ <b>${f4(s.ct)}</b>${exactName(s.ct)}</div>`};}
+  if(type==='gamma'){const a=r5(30,130),b=r5(30,130),th=r5(30,150);
+    const cg=cs(a)*cs(b)+sn(a)*sn(b)*cs(th),g=Math.acos(cg)*R2D;
+    return{type,meta:'Reverse: find γ',kind:'num',unit:'°',ans:g,tol:0.5,viz:[a,b,th],
+     text:`Two faces of a trihedral angle have face angles ${ang('α',a)} and ${ang('β',b)}, and the dihedral angle between them is ${ang('θ',th)}.
+      Find the third face angle <b>γ</b> (to 1 d.p.).`,
+     hint:'Rearrange the formula: cos γ = cos α cos β + sin α sin β cos θ.',
+     sol:`<div class="sol"><p>cos γ = cos α cos β + sin α sin β cos θ</p>
+      <p>= cos ${a}°·cos ${b}° + sin ${a}°·sin ${b}°·cos ${th}°</p>
+      <p>= (${f4(cs(a))})(${f4(cs(b))}) + (${f4(sn(a))})(${f4(sn(b))})(${f4(cs(th))}) = <b>${f4(cg)}</b></p>
+      <p>γ = cos⁻¹(${f4(cg)}) ≈ <b>${g.toFixed(2)}°</b></p></div>`};}
+  if(type==='applied'){const p=pick(APPLIED);const s=solTheta(p.a,p.b,p.c);
+    return{type,meta:'Real solid · '+p.name,kind:'num',unit:'°',ans:s.th,tol:0.5,viz:[p.a,p.b,s.th],
+     text:p.q+' Give θ in degrees (1 d.p.).',hint:p.hint,sol:`<div class="sol"><p>${p.exp}</p></div>`+s.html};}
+  const c=pick(CONCEPTS);const opts=shuffle(c.o.map((t,i)=>({t,ok:i===0})));
+  return{type:'concept',meta:'Understanding the derivation',kind:'mcq',opts,text:c.q,
+    hint:'Replay the animation above and look at the step this question is about.',sol:`<div class="sol">${c.e}</div>`,viz:null};
+}
+function exactName(ct){const m=[[1/3,'1/3'],[-1/3,'−1/3'],[0,'0'],[0.5,'1/2'],[-0.5,'−1/2'],[1/Math.sqrt(3),'1/√3 = √3/3'],[-1/Math.sqrt(3),'−1/√3'],[Math.SQRT1_2,'√2/2'],[-Math.SQRT1_2,'−√2/2'],[Math.sqrt(2)-1,'√2 − 1'],[1/Math.sqrt(2)*0+0.7071,'']];
+  for(const[v,n]of m)if(n&&Math.abs(ct-v)<1e-4)return ` &nbsp;= <b>${n}</b> exactly`;return'';}
+
+function parseAns(s){s=s.trim().replace(/°/g,'').replace(/−/g,'-').replace(/\s+/g,'');
+  const fm=s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);if(fm)return parseFloat(fm[1])/parseFloat(fm[2]);
+  const v=Number(s);return s===''||isNaN(v)?NaN:v;}
+
+const qfb=document.getElementById('qfb');
+function showQ(){
+  const q=PR.q=genQ(document.getElementById('qtype').value);PR.done=false;
+  document.getElementById('qmeta').textContent=q.meta;document.getElementById('qtext').innerHTML=q.text;qfb.innerHTML='';
+  const box=document.getElementById('qinput');
+  if(q.kind==='num'){box.innerHTML=`<div class="ansRow"><input id="ans" placeholder="your answer" autocomplete="off"> <span style="font-size:1.2rem">${q.unit}</span></div>`;
+    const inp=document.getElementById('ans');inp.addEventListener('keydown',e=>{if(e.key==='Enter')check();});setTimeout(()=>inp.focus({preventScroll:true}),50);}
+  else{box.innerHTML='<div class="opts">'+q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${o.t}</button>`).join('')+'</div>';
+    box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>checkMCQ(+b.dataset.i));}
+  document.getElementById('qcheck').style.display=q.kind==='num'?'':'none';
+  document.getElementById('qviz').style.display=q.viz?'':'none';
+}
+function record(ok){if(PR.done)return;PR.done=true;PR.total++;if(ok){PR.score++;PR.streak++;}else PR.streak=0;
+  document.getElementById('score').textContent=`${PR.score} / ${PR.total}`;document.getElementById('streak').textContent=`${PR.streak} 🔥`;}
+function check(){
+  const q=PR.q;const v=parseAns(document.getElementById('ans').value);
+  if(isNaN(v)){qfb.innerHTML='<span class="no">Please enter a number (e.g. 70.5 or -1/3).</span>';return;}
+  const ok=Math.abs(v-q.ans)<=q.tol;const first=!PR.done;record(ok);
+  const shown=q.unit==='°'?q.ans.toFixed(2)+'°':f4(q.ans);
+  qfb.innerHTML=ok?`<span class="ok">✔ Correct!</span> The exact value is ${shown}. ${first?'':'(not counted again)'}${q.sol}`
+    :`<span class="no">✘ Not quite.</span> Check which face angle is opposite θ, and make sure your calculator is in <b>degree</b> mode. Try again, or open the solution.`;
+}
+function checkMCQ(i){
+  const q=PR.q;const btns=document.querySelectorAll('.opt');const ok=q.opts[i].ok;record(ok);
+  btns.forEach((b,j)=>{if(q.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong');b.disabled=true;});
+  qfb.innerHTML=(ok?'<span class="ok">✔ Correct!</span>':'<span class="no">✘ Not this one.</span>')+q.sol;
+}
+document.getElementById('qcheck').onclick=check;
+document.getElementById('qnext').onclick=showQ;
+document.getElementById('qtype').onchange=showQ;
+document.getElementById('qhint').onclick=()=>{if(!qfb.querySelector('.hintBox'))qfb.insertAdjacentHTML('afterbegin',`<div class="hintBox">💡 ${PR.q.hint}</div>`);};
+document.getElementById('qsol').onclick=()=>{if(!PR.done)record(false);
+  if(PR.q.kind==='mcq'){document.querySelectorAll('.opt').forEach((b,j)=>{if(PR.q.opts[j].ok)b.classList.add('right');b.disabled=true;});}
+  qfb.innerHTML=`<b>Worked solution:</b>${PR.q.sol}`;};
+document.getElementById('qviz').onclick=()=>{const v=PR.q.viz;if(!v)return;
+  loadShape(v[0],v[1],Math.round(v[2]*10)/10);goStep(STEPS.length-1);
+  document.getElementById('c3d').scrollIntoView({behavior:'smooth',block:'center'});};
+
+/* ============ init ============ */
+fit();geom();fromSliders();updStepUI();showQ();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
